@@ -1,8 +1,12 @@
 package com.treinamento.consultofertapreaprovada.service;
 
+import com.treinamento.consultofertapreaprovada.dtos.ClienteDto;
+import com.treinamento.consultofertapreaprovada.exceptions.ClientNotFound;
+import com.treinamento.consultofertapreaprovada.model.Cliente;
 import com.treinamento.consultofertapreaprovada.model.OfertaPreAprovada;
 import com.treinamento.consultofertapreaprovada.repositories.OfertaPreAprovadaRepository;
 import com.treinamento.consultofertapreaprovada.utils.DateUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -12,40 +16,43 @@ import java.util.stream.Collectors;
 @Service
 public class OfertaPreAprovadaService {
 
-    private final OfertaPreAprovadaRepository repository;
+    private final OfertaPreAprovadaRepository ofertaPreAprovadaRepository;
+    private final ClienteService clienteService;
 
-    public OfertaPreAprovadaService(OfertaPreAprovadaRepository repository) {
-        this.repository = repository;
+    public OfertaPreAprovadaService(OfertaPreAprovadaRepository ofertaPreAprovadaRepository, ClienteService clienteService) {
+        this.ofertaPreAprovadaRepository = ofertaPreAprovadaRepository;
+        this.clienteService = clienteService;
     }
 
     public List<OfertaPreAprovada> getAll() throws SQLException {
 
-        if(repository.findAll() == null){
+        if (ofertaPreAprovadaRepository.findAll() == null) {
             throw new SQLException();
         }
 
-        return repository.findAll();
+        return ofertaPreAprovadaRepository.findAll();
     }
 
-    public List<OfertaPreAprovada> getOfertasVelidas() {
+    public List<OfertaPreAprovada> getOfertasValidas(ClienteDto clienteDto) {
 
-        try {
-            List<OfertaPreAprovada> listaOfertaPreAprovada = getAll();
+        Cliente cliente = new Cliente();
+        BeanUtils.copyProperties(clienteDto,cliente);
 
-            List<OfertaPreAprovada> listaFiltrada = listaOfertaPreAprovada
-                    .stream()
-                    .filter(preAprovado -> ofertaValida(preAprovado))
-                    .collect(Collectors.toList());
+        clienteService.findByClient(cliente);
 
-            return listaFiltrada;
-        } catch (SQLException exception) {
-            System.out.println(exception.getStackTrace());
-            return null;
-        }
+        List<OfertaPreAprovada> listaOfertaPreAprovada = ofertaPreAprovadaRepository.findByCliente(cliente);
+
+        List<OfertaPreAprovada> listaFiltrada = listaOfertaPreAprovada
+                .stream()
+                .filter(preAprovado -> ofertaValida(preAprovado))
+                .collect(Collectors.toList());
+
+        return listaFiltrada;
+
     }
 
-    public boolean ofertaValida(OfertaPreAprovada ofertaPreAprovada){
-        return DateUtils.dataValida(ofertaPreAprovada.getData_validade()) <= 0 && ofertaPreAprovada.getIscontrado() == false;
+    public boolean ofertaValida(OfertaPreAprovada ofertaPreAprovada) {
+        return DateUtils.dataValida(ofertaPreAprovada.getData_validade()) <= 0 && ofertaPreAprovada.getContratado() == false;
     }
 
 

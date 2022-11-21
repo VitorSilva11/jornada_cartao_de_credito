@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 @ControllerAdvice
-public class SQLExceptionHandler {
+public class SqlExceptionHandler {
 
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<ExceptionDetails> handleBadRequestException(SQLException sqlException){
