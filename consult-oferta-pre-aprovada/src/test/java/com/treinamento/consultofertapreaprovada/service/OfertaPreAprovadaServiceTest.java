@@ -1,6 +1,9 @@
 package com.treinamento.consultofertapreaprovada.service;
 
+import com.treinamento.consultofertapreaprovada.dtos.ClienteDto;
 import com.treinamento.consultofertapreaprovada.exceptions.ClientNotFound;
+import com.treinamento.consultofertapreaprovada.exceptions.OfertaNotFound;
+import com.treinamento.consultofertapreaprovada.model.Cliente;
 import com.treinamento.consultofertapreaprovada.model.OfertaPreAprovada;
 import com.treinamento.consultofertapreaprovada.repositories.OfertaPreAprovadaRepository;
 import com.treinamento.consultofertapreaprovada.utils.ClienteCreator;
@@ -14,9 +17,11 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
@@ -83,6 +88,16 @@ class OfertaPreAprovadaServiceTest {
         Assertions.assertThatExceptionOfType(ClientNotFound.class)
                 .isThrownBy(() -> this.ofertaPreAprovadaService.getOfertasValidas(ClienteCreator.createClienteDTOToBeSave()));
     }
+
+    @Test
+    public void lislistar_ofertasPreAprovadas_retornandoErroDeOfertaNaoEncontrada(){
+        BDDMockito.when(this.ofertaPreAprovadaRepositoryMock.findByCliente(ArgumentMatchers.any()))
+                .thenReturn(Collections.emptyList());
+
+        Assertions.assertThatExceptionOfType(OfertaNotFound.class)
+                .isThrownBy(() -> this.ofertaPreAprovadaService.getOfertasValidas(ClienteCreator.createClienteDTOToBeSave()));
+    }
+
 
     @Test
     public void listar_ofertasPreAprovadas_retornandoErroNoBancoDeDados() throws SQLException {

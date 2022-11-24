@@ -2,6 +2,7 @@ package com.treinamento.consultofertapreaprovada.service;
 
 import com.treinamento.consultofertapreaprovada.dtos.ClienteDto;
 import com.treinamento.consultofertapreaprovada.exceptions.ClientNotFound;
+import com.treinamento.consultofertapreaprovada.exceptions.OfertaNotFound;
 import com.treinamento.consultofertapreaprovada.model.Cliente;
 import com.treinamento.consultofertapreaprovada.model.OfertaPreAprovada;
 import com.treinamento.consultofertapreaprovada.repositories.OfertaPreAprovadaRepository;
@@ -42,6 +43,10 @@ public class OfertaPreAprovadaService {
 
         List<OfertaPreAprovada> listaOfertaPreAprovada = ofertaPreAprovadaRepository.findByCliente(cliente);
 
+        if(listaVazia(listaOfertaPreAprovada)){
+            throw new OfertaNotFound("Oferta Não Encontrada");
+        }
+
         List<OfertaPreAprovada> listaFiltrada = listaOfertaPreAprovada
                 .stream()
                 .filter(preAprovado -> ofertaValida(preAprovado))
@@ -53,6 +58,10 @@ public class OfertaPreAprovadaService {
 
     public boolean ofertaValida(OfertaPreAprovada ofertaPreAprovada) {
         return DateUtils.dataValida(ofertaPreAprovada.getData_validade()) <= 0 && ofertaPreAprovada.getContratado() == false;
+    }
+
+    public boolean listaVazia(List<OfertaPreAprovada> listaOfertaPreAprovada){
+        return listaOfertaPreAprovada.isEmpty();
     }
 
 

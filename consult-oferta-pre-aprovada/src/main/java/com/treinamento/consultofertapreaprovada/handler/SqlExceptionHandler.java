@@ -19,8 +19,6 @@ public class SqlExceptionHandler {
                         .timestamp(LocalDateTime.now())
                         .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                         .title("Erro no banco de dados")
-                        .details(sqlException.getMessage())
-                        .developerMessage(sqlException.getClass().getName())
                         .build(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

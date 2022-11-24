@@ -1,16 +1,15 @@
 package com.treinamento.consultofertapreaprovada.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

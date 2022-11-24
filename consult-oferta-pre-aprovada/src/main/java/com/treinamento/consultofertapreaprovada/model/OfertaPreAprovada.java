@@ -1,10 +1,7 @@
 package com.treinamento.consultofertapreaprovada.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -12,7 +9,9 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

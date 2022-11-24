@@ -20,8 +20,6 @@ public class ClientNotFoundExceptionHandler {
                         .timestamp(LocalDateTime.now())
                         .status(HttpStatus.NOT_FOUND.value())
                         .title("Cliente não encontrado")
-                        .details(clientNotFound.getMessage())
-                        .developerMessage(clientNotFound.getClass().getName())
                         .build(), HttpStatus.NOT_FOUND);
     }
 

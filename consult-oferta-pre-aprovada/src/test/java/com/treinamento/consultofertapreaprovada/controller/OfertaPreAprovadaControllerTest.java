@@ -1,6 +1,8 @@
 package com.treinamento.consultofertapreaprovada.controller;
 
+import com.treinamento.consultofertapreaprovada.dtos.ClienteDto;
 import com.treinamento.consultofertapreaprovada.exceptions.ClientNotFound;
+import com.treinamento.consultofertapreaprovada.exceptions.OfertaNotFound;
 import com.treinamento.consultofertapreaprovada.model.OfertaPreAprovada;
 import com.treinamento.consultofertapreaprovada.service.OfertaPreAprovadaService;
 import com.treinamento.consultofertapreaprovada.utils.ClienteCreator;
@@ -14,8 +16,12 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.core.MethodParameter;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.Collections;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
@@ -26,9 +32,6 @@ public class OfertaPreAprovadaControllerTest {
 
     @Mock
     private OfertaPreAprovadaService ofertaPreAprovadaServiceMock;
-
-
-
 
 
     @BeforeEach()
@@ -66,6 +69,25 @@ public class OfertaPreAprovadaControllerTest {
 
     }
 
+    @Test
+    public void retorna_oferta_naoEncontrada(){
+        BDDMockito.when(ofertaPreAprovadaServiceMock.getOfertasValidas(ArgumentMatchers.any()))
+                .thenThrow(new OfertaNotFound("Oferta Não Encontrada"));
 
+        Assertions.assertThatExceptionOfType(OfertaNotFound.class)
+                .isThrownBy(() -> this.ofertaPreAprovadaController.listOfertasPreAprovadas(ClienteCreator.createClienteDTOToBeSave()));
+    }
+
+    @Test
+    public void retorna_erroDeValidacaoCpf(){
+
+
+        ClienteDto clienteDto = ClienteCreator.createClienteDTOToBeSave();
+
+        clienteDto.setCpf("");
+
+        Assertions.assertThatExceptionOfType(MethodArgumentNotValidException.class)
+                .isThrownBy(() -> this.ofertaPreAprovadaController.listOfertasPreAprovadas(clienteDto));
+    }
 
 }
